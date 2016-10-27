@@ -1,0 +1,75 @@
+<!doctype html>
+<html ng-app="hllCheckin"> <!--ng-app tells Angular to hand over control to the `hllCheckin` module-->
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script> <!-- include the angular library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <script src="hllcheckin.js"></script> <!-- Our script -->
+    <link 
+      rel="stylesheet" 
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" 
+      crossorigin="anonymous"
+    > <!-- include Bootstrap CSS -->
+  </head>
+  <body ng-controller="HllCheckInCtrl"> <!-- This is the controller for the view -->
+    <div class="container">
+      <p class="pull-right ng-hide" ng-show="loggedIn">Hello {{userEmail}}</p>
+      <h1>Check-dis</h1>
+      
+
+      <div class="well ng-hide" ng-hide="(userEmail.length > 0) && (loggedIn)">
+        <form name="signInForm">
+          <div class="form-group">
+            <label for="userEmailInput">Email</label>
+            <input id="userEmailInput" type="email" class="form-control" ng-model="userEmail" name="userEmail" />
+          </div>
+          <button class="btn btn-primary" ng-click="login()" ng-disabled="signInForm.userEmail.$invalid || signInForm.userEmail.$pristine">Login</button>
+          <button class="btn btn-info" ng-click="fakeEmail()">Fake Email</button>
+        </form>
+      </div>
+
+
+      <div class="ng-hide" ng-show="loggedIn">
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="ng-hide" ng-show="currentLocation">
+              <h2>Location <strong>{{currentLocation}}</strong></h2>
+              <p>Check-ins: {{locationsCheckins[currentLocation].checkins}}</p>
+              <button class="btn btn-primary" ng-click="checkIn(currentLocation,userEmail)">Check-in</button>
+              <button class="btn btn-warning" ng-click="randomCheckIn(10,currentLocation)">Random Check-ins (10)</button>
+              <button class="btn btn-warning" ng-click="randomCheckIn(50,currentLocation)">Random Check-ins (50)</button>
+              <button class="btn btn-warning" ng-click="randomCheckIn(100,currentLocation)">Random Check-ins (100)</button>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <button class="btn btn-info btn-block" ng-click="setLocation(location)" ng-repeat="location in locations" ng-disabled="location === currentLocation">{{location}}</button>
+          </div>
+        </div>   
+      </div>
+
+      <div class="ng-hide" ng-show="checkins.length > 0">
+        <div ng-repeat="checkin in checkins">
+          Checked In: {{checkin.email}} at {{checkin.location}}
+        </div>
+      </div>
+
+      <div class="ng-hide" ng-show="loggedIn">
+        <h3>Combined Locations</h3>
+        <div class="row">
+          <div class="col-sm-6">
+            <div ng-repeat="location in locations">
+              <div class="checkbox"> <label> <input type="checkbox" value="{{location}}" ng-model="countLocations[location]"> {{location}} </label> </div>
+            </div>
+            <button class="btn btn-primary" ng-click="multiCount()">Count Checked Locations</button>
+          </div>
+          <div class="col-sm-6 well ng-hide" ng-show="combinedCount">
+            Total for the following locations:
+            <ul>
+              <li ng-repeat="aLocation in combinedCount.locations">{{aLocation}}</li>
+            </ul>
+            <strong>{{combinedCount.total | number}} total</strong>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
